@@ -6,11 +6,13 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "libzerocoin/Params.h"
 #include "chainparams.h"
-
 #include "random.h"
 #include "util.h"
 #include "utilstrencodings.h"
+#include "masternode.h"
+
 #include <assert.h>
 
 #include <boost/assign/list_of.hpp>
@@ -24,7 +26,6 @@ struct SeedSpec6 {
 };
 
 #include "chainparamsseeds.h"
-
 /**
  * Main network
  */
@@ -108,7 +109,7 @@ public:
         nLastPOWBlock = 140;
         nMaturity = 59;
         nMasternodeCountDrift = 20;
-        nMasternodeCollateralLimit = 5000;
+
         nModifierUpdateBlock = 615800;
         nMaxMoneyOut = 60000000 * COIN;
 
@@ -137,20 +138,6 @@ public:
         genesis.nBits = 0x1e0ffff0;
         genesis.nNonce = 157392;
 
-		//Generating genesis block
-       /* genesis.nNonce   = 0;
-        do {
-            genesis.nNonce++;
-            hashGenesisBlock = genesis.GetHash();
-        } while(hashGenesisBlock > uint256("0x0001000000000000000000000000000000000000000000000000000000000000"));
-	std::cout << "txNew:" << std::endl << txNew.ToString() << std::endl << std::endl;
-        std::cout <<"hashGenesisBlock:" << std::endl;
-        std::cout << hashGenesisBlock.ToString() << std::endl << std::endl;
- 
-        std::cout <<"genesis:" << std::endl << std::endl;
-        std::cout << genesis.ToString() << std::endl;
-        //End generating genesis block/*/
-		
         hashGenesisBlock = genesis.GetHash();
         assert(hashGenesisBlock == uint256("000024a274d211e96733b80286718d4759973a3269b7b4e531fc9909b41e8bbb"));
         assert(genesis.hashMerkleRoot == uint256("035b47d06aa4924e76f4c211bd9412a15f5607edfb9ba2b0fa1cf65eb441b593"));
@@ -181,7 +168,7 @@ public:
         nPoolMaxTransactions = 3;
         strSporkKey = "0488207ddc1c73a064e636d80ff776f81bdcd6f4a898c9783d128bf487c33db39a6fd2d44b194b141bcc0425d5c3cbd6db561dcf129a8188eefc15d0667317f27d";
         strObfuscationPoolDummyAddress = "BPqRnqvRHKq8YmXkvYQV1AQmhSr4hzsXGA";
-		
+
         nStartMasternodePayments = 1533225982; //Wed, 2 Aug 2018 16:36:16 GMT
     }
 
@@ -191,6 +178,19 @@ public:
     }
 };
 static CMainParams mainParams;
+
+std::string CChainParams::GetDevFeeRewardAddress()
+{
+	return "BQk7aBse81Gbjw3Xk8XgXS8AbuShn3b7hp";
+}
+
+CScript CChainParams::GetScriptForDevFeeDestination() {
+    CBitcoinAddress address(GetDevFeeRewardAddress().c_str());
+    assert(address.IsValid());
+
+    CScript script = GetScriptForDestination(address.Get());
+    return script;
+}
 
 /**
  * Testnet (v3)
@@ -217,7 +217,7 @@ public:
         nLastPOWBlock = 200;
         nMaturity = 15;
         nMasternodeCountDrift = 4;
-        nMasternodeCollateralLimit = 1000;
+
         nModifierUpdateBlock = 51197; //approx Mon, 17 Apr 2017 04:00:00 GMT
         nMaxMoneyOut = 43199500 * COIN;
 

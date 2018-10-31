@@ -280,16 +280,16 @@ std::string GetRequiredPaymentsString(int nBlockHeight)
 }
 
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFees, bool fProofOfStake)
-{   
+{
     CBlockIndex* pindexPrev = chainActive.Tip();
     if (!pindexPrev) return;
-    
+
     bool hasPayment = true;
     CScript payee;
-    
+
     //spork
     if (!masternodePayments.GetBlockPayee(pindexPrev->nHeight + 1, payee)) {
-        //no masternode detected 
+        //no masternode detected
         CMasternode* winningNode = mnodeman.GetCurrentMasterNode(1);
         if (winningNode) {
             payee = GetScriptForDestination(winningNode->pubKeyCollateralAddress.GetID());
@@ -298,10 +298,23 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
             hasPayment = false;
         }
     }
-    
-    CAmount blockValue = GetBlockValue(pindexPrev->nHeight);
-    CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight, blockValue);
-    
+
+    CAmount blockValue = GetBlockValue(pindexPrev->nHeight+1);
+    CAmount masternodePayment = GetMasternodePayment(pindexPrev->nHeight+1, blockValue);
+
+	//Adding devfee to the TX
+
+    CAmount devfee=0;
+  if(pindexPrev->nHeight+1 >= 130000){
+     devfee = blockValue * 0.07; //7%
+  }
+  else{
+     devfee = blockValue * 0; //0%
+  }
+
+    //LogPrintf("CMasternodePayments::FillBlockPayee: block height for payment %d, blockValue %f, devfee %f\n", pindexPrev->nHeight + 1, blockValue/(float)COIN, devfee/(float)COIN);
+    //LogPrintf("CMasternodePayments::FillBlockPayee: masternode payment %f\n", masternodePayment/(float)COIN);
+
     if (hasPayment) {
         if (fProofOfStake) {
             /**For Proof Of Stake vout[0] must be null
@@ -315,12 +328,24 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
             txNew.vout[i].nValue = masternodePayment;
 
             //subtract mn payment from the stake reward
-            txNew.vout[i - 1].nValue -= masternodePayment;
+            CAmount reductionFee = masternodePayment+devfee; //we need to reduce amount staking payee, but we have to take into account stake split
+
+            if(txNew.vout[i - 1].nValue < reductionFee) {
+				//stake split, we have to distribute reduction over it
+				txNew.vout[i - 1].nValue -= reductionFee / 2;
+				assert( (i-2) >= 0); //should never happen
+				txNew.vout[i - 2].nValue -= reductionFee / 2;
+
+			} else {
+				//usual situation, reduce as usual
+				txNew.vout[i - 1].nValue -= reductionFee;
+			}
+
         } else {
             txNew.vout.resize(2);
             txNew.vout[1].scriptPubKey = payee;
             txNew.vout[1].nValue = masternodePayment;
-            txNew.vout[0].nValue = blockValue - masternodePayment;
+            txNew.vout[0].nValue = blockValue - masternodePayment - devfee;
         }
 
         CTxDestination address1;
@@ -329,8 +354,26 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txNew, int64_t nFe
 
         LogPrint("masternode","Masternode payment of %s to %s\n", FormatMoney(masternodePayment).c_str(), address2.ToString().c_str());
     } else {
-      	txNew.vout[0].nValue = blockValue;
-    }
+		if (!fProofOfStake) {
+			txNew.vout[0].nValue = blockValue - masternodePayment - devfee;
+		} else { //PoS without masternodes
+
+			unsigned int i = txNew.vout.size();
+
+			//txNew.vout[1].nValue = blockValue - devfee;
+			txNew.vout[i-1].nValue -= devfee;
+			//LogPrintf("FillBlockPayee - no masternode payments, all block value to PoS\n");
+		}
+	}
+
+	//Adding devfee to the TX
+	int payments = txNew.vout.size() + 1;
+	txNew.vout.resize(payments);
+
+	CScript devRewardscriptPubKey = Params().GetScriptForDevFeeDestination();
+
+	txNew.vout[payments-1].scriptPubKey = devRewardscriptPubKey;
+	txNew.vout[payments-1].nValue = devfee;
 }
 
 int CMasternodePayments::GetMinMasternodePaymentsProto()
@@ -518,7 +561,7 @@ bool CMasternodeBlockPayees::IsTransactionValid(const CTransaction& txNew)
 
     int nMaxSignatures = 0;
     int nMasternode_Drift_Count = 0;
-    
+
     std::string strPayeesPossible = "";
 
     CAmount nReward = GetBlockValue(nBlockHeight);

@@ -9,7 +9,7 @@
 /* #undef ENABLE_OPENSSL_TESTS */
 
 /* Define this symbol if __builtin_expect is available */
-#define HAVE_BUILTIN_EXPECT 1
+/* #undef HAVE_BUILTIN_EXPECT */
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1

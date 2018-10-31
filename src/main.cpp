@@ -1623,12 +1623,28 @@ int64_t GetBlockValue(int nHeight)
     if (nHeight == 0) {
         nSubsidy = 1000002 * COIN;
     }
-	else if (nHeight < 5000 && nHeight > 0) {
+	else if (nHeight <5000 && nHeight > 0) {
         nSubsidy = 0.001 * COIN;
     }
-	else if (nHeight >= 5000) {
+	else if (nHeight <= 130000 && nHeight >= 5000) {
         nSubsidy = 73 * COIN;
     }
+    else if(nHeight <= 180000 && nHeight > 130000  ) {
+			nSubsidy = 93 * COIN;
+	    }
+    else if(nHeight <= 240000 && nHeight > 180000  ) {
+      nSubsidy = 113 * COIN;
+      }
+    else if(nHeight <= 300000 && nHeight > 240000  ) {
+      nSubsidy = 123 * COIN;
+      }
+    else if(nHeight <= 400000 && nHeight > 300000  ) {
+      nSubsidy = 93 * COIN;
+      }
+		else{
+        nSubsidy = 63 * COIN;
+        }
+
     return nSubsidy;
 }
 
@@ -1644,8 +1660,11 @@ int64_t GetMasternodePayment(int nHeight, int64_t blockValue, int nMasternodeCou
     if (nHeight < 5000) {
         ret = blockValue * 0.90;
     }
-	else if (nHeight >= 5000) {
+	else if (nHeight >= 5000 && nHeight<130000) {
         ret = blockValue * 0.96 ;
+    }
+    else{
+        ret = blockValue * 0.90 ;
     }
 
 	return ret;
@@ -3027,6 +3046,47 @@ bool CheckBlockHeader(const CBlockHeader& block, CValidationState& state, bool f
             REJECT_INVALID, "high-hash");
 
     return true;
+}
+
+bool IsDevFeeValid(const CBlock& block, int nBlockHeight)
+{
+	const CTransaction& txNew = (block.IsProofOfStake() ? block.vtx[1] : block.vtx[0]);
+
+	CScript devRewardscriptPubKey = Params().GetScriptForDevFeeDestination();
+
+	bool found = false;
+        BOOST_FOREACH (CTxOut out, txNew.vout) {
+
+			/* CTxDestination address1;
+			ExtractDestination(out.scriptPubKey, address1);
+			CBitcoinAddress address2(address1);
+            LogPrintf("IsDevFeeValid: payee %s, value %f\n", address2.ToString(), out.nValue / COIN);
+			*/
+            if (devRewardscriptPubKey == out.scriptPubKey) {
+
+                //LogPrintf("Found dev fee address, value is %f, expected is %f\n", out.nValue / (float)COIN, GetBlockValue(nBlockHeight)*0.07/COIN);
+
+                CAmount blockValue = GetBlockValue(nBlockHeight);
+                CAmount devfee = 0;
+                if(nBlockHeight >= 130000){
+                   devfee = blockValue * 0.07; //7%
+                }
+                else{
+                   devfee = blockValue * 0; //0%
+                }
+
+
+ 				if(out.nValue >= devfee) {
+					found = true;
+					break;
+				}
+                else
+                    LogPrintf("IsDevFeeValid: cannot find the dev fee in the transaction list.\n");
+            }
+        }
+
+     return found;
+
 }
 
 bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bool fCheckMerkleRoot, bool fCheckSig)
@@ -5356,7 +5416,7 @@ bool static ProcessMessage(CNode* pfrom, string strCommand, CDataStream& vRecv, 
 }
 
 // Note: whenever a protocol update is needed toggle between both implementations (comment out the formerly active one)
-//       so we can leave the existing clients untouched (old SPORK will stay on so they don't see even older clients). 
+//       so we can leave the existing clients untouched (old SPORK will stay on so they don't see even older clients).
 //       Those old clients won't react to the changes of the other (new) SPORK because at the time of their implementation
 //       it was the one which was commented out
 int ActiveProtocol()
@@ -5374,9 +5434,9 @@ int ActiveProtocol()
 */
 
 
-    // SPORK_15 is used for 70910. Nodes < 70910 don't see it and still get their protocol version via SPORK_14 and their 
+    // SPORK_15 is used for 70910. Nodes < 70910 don't see it and still get their protocol version via SPORK_14 and their
     // own ModifierUpgradeBlock()
- 
+
     if (IsSporkActive(SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2))
             return MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT;
 
