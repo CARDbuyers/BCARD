@@ -47,6 +47,7 @@ QT_FORMS_UI = \
   qt/forms/receiverequestdialog.ui \
   qt/forms/rpcconsole.ui \
   qt/forms/sendcoinsdialog.ui \
+  qt/forms/infodialog.ui \
   qt/forms/sendcoinsentry.ui \
   qt/forms/signverifymessagedialog.ui \
   qt/forms/transactiondescdialog.ui
@@ -99,6 +100,7 @@ QT_MOC_CPP = \
   qt/moc_utilitydialog.cpp \
   qt/moc_walletframe.cpp \
   qt/moc_walletmodel.cpp \
+  qt/moc_infodialog.cpp \
   qt/moc_walletview.cpp
 
 BITCOIN_MM = \
@@ -176,6 +178,7 @@ BITCOIN_QT_H = \
   qt/walletmodel.h \
   qt/walletmodeltransaction.h \
   qt/walletview.h \
+  qt/infodialog.h \
   qt/winshutdownmonitor.h
 
 RES_ICONS = \
@@ -259,6 +262,7 @@ BITCOIN_QT_CPP = \
   qt/splashscreen.cpp \
   qt/trafficgraphwidget.cpp \
   qt/utilitydialog.cpp \
+  qt/infodialog.cpp \
   qt/winshutdownmonitor.cpp
 
 if ENABLE_WALLET

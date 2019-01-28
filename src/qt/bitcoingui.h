@@ -103,6 +103,7 @@ private:
     QAction* bip38ToolAction;
     QAction* aboutAction;
     QAction* receiveCoinsAction;
+	QAction* infoAction;
     QAction* optionsAction;
     QAction* toggleHideAction;
     QAction* encryptWalletAction;
@@ -203,6 +204,7 @@ private slots:
     void gotoMasternodePage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
+	void gotoInfoPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
 

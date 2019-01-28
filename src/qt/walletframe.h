@@ -58,6 +58,7 @@ public slots:
     void gotoMasternodePage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
+	void gotoInfoPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
     /** Switch to explorer page */

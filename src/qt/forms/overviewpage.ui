@@ -434,14 +434,14 @@
            <item row="0" column="0">
             <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>Status:</string>
+              <string/>
              </property>
             </widget>
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_7">
              <property name="text">
-              <string>Completion:</string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -461,7 +461,7 @@
            <item row="2" column="0">
             <widget class="QLabel" name="labelAnonymizedText">
              <property name="text">
-              <string>Obfuscation Balance:</string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -474,28 +474,28 @@
               </font>
              </property>
              <property name="text">
-              <string notr="true">0 BCARD</string>
+              <string notr="true"/>
              </property>
             </widget>
            </item>
            <item row="3" column="0">
             <widget class="QLabel" name="label_8">
              <property name="text">
-              <string>Amount and Rounds:</string>
+              <string/>
              </property>
             </widget>
            </item>
            <item row="3" column="1">
             <widget class="QLabel" name="labelAmountRounds">
              <property name="text">
-              <string>0 BCARD / 0 Rounds</string>
+              <string/>
              </property>
             </widget>
            </item>
            <item row="4" column="0">
             <widget class="QLabel" name="label_9">
              <property name="text">
-              <string>Submitted Denom:</string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -505,14 +505,14 @@
               <string>The denominations you submitted to the Masternode.&lt;br&gt;To mix, other users must submit the exact same denominations.</string>
              </property>
              <property name="text">
-              <string>n/a</string>
+              <string/>
              </property>
             </widget>
            </item>
            <item row="0" column="1">
             <widget class="QLabel" name="obfuscationEnabled">
              <property name="text">
-              <string>Enabled/Disabled</string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -971,7 +971,7 @@
            </sizepolicy>
           </property>
           <property name="text">
-           <string>Start/Stop Mixing</string>
+           <string/>
           </property>
          </widget>
          <widget class="Line" name="lineLastMessage">
@@ -1003,60 +1003,13 @@
            </size>
           </property>
           <property name="text">
-           <string>(Last Message)</string>
+           <string/>
           </property>
           <property name="alignment">
            <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
           </property>
           <property name="wordWrap">
            <bool>true</bool>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="obfuscationAuto">
-          <property name="geometry">
-           <rect>
-            <x>10</x>
-            <y>310</y>
-            <width>221</width>
-            <height>28</height>
-           </rect>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Try to manually submit a Obfuscation request.</string>
-          </property>
-          <property name="text">
-           <string>Try Mix</string>
-          </property>
-         </widget>
-         <widget class="QPushButton" name="obfuscationReset">
-          <property name="geometry">
-           <rect>
-            <x>230</x>
-            <y>310</y>
-            <width>221</width>
-            <height>28</height>
-           </rect>
-          </property>
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="toolTip">
-           <string>Reset the current status of Obfuscation (can interrupt Obfuscation if it's in the process of Mixing, which can cost you money!)</string>
-          </property>
-          <property name="autoFillBackground">
-           <bool>false</bool>
-          </property>
-          <property name="text">
-           <string>Reset</string>
           </property>
          </widget>
          <widget class="QWidget" name="layoutWidget">
@@ -1078,7 +1031,7 @@
               </font>
              </property>
              <property name="text">
-              <string>Obfuscation</string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -1091,7 +1044,7 @@
               <string notr="true">QLabel { color: red; }</string>
              </property>
              <property name="text">
-              <string notr="true">(out of sync)</string>
+              <string notr="true"/>
              </property>
              <property name="alignment">
               <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
