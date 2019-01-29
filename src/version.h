@@ -13,7 +13,7 @@
  */
 
 static const int PROTOCOL_VERSION = 70811;
-static const int PROTOCOL_VERSION_BEFORE_FORK = 70810; //new version with dev fee and new PoS maturity time 2.1.x
+static const int PROTOCOL_VERSION_BEFORE_FORK = 70811; //new version with dev fee and new PoS maturity time 2.1.x
 //static const int PROTOCOL_VERSION = 71002; //release 2.0.x
 
 //! initial proto version, to be increased after version/verack negotiation
@@ -23,7 +23,7 @@ static const int INIT_PROTO_VERSION = 209;
 static const int GETHEADERS_VERSION = 70000;
 
 //! disconnect from peers older than this proto version
-static const int MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT = 70810;
+static const int MIN_PEER_PROTO_VERSION_BEFORE_ENFORCEMENT = 70811;
 static const int MIN_PEER_PROTO_VERSION_AFTER_ENFORCEMENT = 70811;
 
 //! nTime field added to CAddress, starting with this version;
