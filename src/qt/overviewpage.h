@@ -63,8 +63,8 @@ private:
 
 private slots:
     void toggleObfuscation();
-    /*void obfuscationAuto();
-    void obfuscationReset();*/
+    void obfuscationAuto();
+    void obfuscationReset();
     void updateDisplayUnit();
     void handleTransactionClicked(const QModelIndex& index);
     void updateAlerts(const QString& warnings);

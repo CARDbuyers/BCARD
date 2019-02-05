@@ -21,7 +21,6 @@
 #include "transactiontablemodel.h"
 #include "transactionview.h"
 #include "walletmodel.h"
-#include "infodialog.h"
 
 #include "ui_interface.h"
 
@@ -70,14 +69,12 @@ WalletView::WalletView(QWidget* parent) : QStackedWidget(parent),
     vbox->addLayout(hbox_buttons);
     transactionsPage->setLayout(vbox);
 
-	infoPage = new InfoDialog();
     receiveCoinsPage = new ReceiveCoinsDialog();
     sendCoinsPage = new SendCoinsDialog();
 
     addWidget(overviewPage);
     addWidget(transactionsPage);
     addWidget(receiveCoinsPage);
-	addWidget(infoPage);
     addWidget(sendCoinsPage);
     addWidget(explorerWindow);
 
@@ -218,11 +215,6 @@ void WalletView::gotoMasternodePage()
 void WalletView::gotoReceiveCoinsPage()
 {
     setCurrentWidget(receiveCoinsPage);
-}
-
-void WalletView::gotoInfoPage()
-{
-    setCurrentWidget(infoPage);  
 }
 
 void WalletView::gotoSendCoinsPage(QString addr)

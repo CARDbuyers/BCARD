@@ -52,7 +52,6 @@
         <file alias="browse">res/icons/browse.png</file>
         <file alias="staking_active">res/icons/staking_active.png</file>
         <file alias="staking_inactive">res/icons/staking_inactive.png</file>
-		<file alias="info">res/icons/info.png</file>
     </qresource>
     <qresource prefix="/css">
         <file alias="default">res/css/default.css</file>
@@ -70,18 +69,6 @@
         <file alias="walletFrame">res/images/walletFrame.png</file>
         <file alias="splash">res/images/splash.png</file>
         <file alias="splash_testnet">res/images/splash_testnet.png</file>
-		<file alias="cryptobridge">res/images/cryptobridge.png</file>
-		<file alias="github">res/images/github.png</file>
-		<file alias="crex24">res/images/crex24.png</file>
-		<file alias="explorer">res/images/explorer.png</file>
-		<file alias="website">res/images/website.png</file>
-		<file alias="bitcointalk">res/images/bitcointalk.png</file>
-		<file alias="discord">res/images/discord.png</file>
-		<file alias="twitter">res/images/twitter.png</file>
-		<file alias="whitepaper">res/images/whitepaper.png</file>
-		<file alias="mncn">res/images/mncn.png</file>
-		<file alias="coinmarketcap">res/images/coinmarketcap.png</file>
-		<file alias="mno">res/images/mno.png</file>
     </qresource>
     <qresource prefix="/movies">
         <file alias="spinner-000">res/movies/spinner-000.png</file>

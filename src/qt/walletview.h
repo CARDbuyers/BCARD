@@ -15,7 +15,6 @@ class ClientModel;
 class OverviewPage;
 class ReceiveCoinsDialog;
 class SendCoinsDialog;
-class InfoDialog;
 class SendCoinsRecipient;
 class TransactionView;
 class WalletModel;
@@ -63,7 +62,6 @@ private:
     OverviewPage* overviewPage;
     QWidget* transactionsPage;
     ReceiveCoinsDialog* receiveCoinsPage;
-	InfoDialog* infoPage;
     SendCoinsDialog* sendCoinsPage;
     BlockExplorer* explorerWindow;
     MasternodeList* masternodeListPage;
@@ -84,7 +82,6 @@ public slots:
     void gotoBlockExplorerPage();
     /** Switch to receive coins page */
     void gotoReceiveCoinsPage();
-	void gotoInfoPage();
     /** Switch to send coins page */
     void gotoSendCoinsPage(QString addr = "");
 

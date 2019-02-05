@@ -57,7 +57,7 @@ public:
         qint64 amount = index.data(TransactionTableModel::AmountRole).toLongLong();
         bool confirmed = index.data(TransactionTableModel::ConfirmedRole).toBool();
         QVariant value = index.data(Qt::ForegroundRole);
-        QColor foreground = QColor(255, 255, 255);
+        QColor foreground = COLOR_BLACK;
         if (value.canConvert<QBrush>()) {
             QBrush brush = qvariant_cast<QBrush>(value);
             foreground = brush.color();
@@ -76,9 +76,9 @@ public:
         if (amount < 0) {
             foreground = COLOR_NEGATIVE;
         } else if (!confirmed) {
-            foreground = QColor(210, 210, 210);
+            foreground = COLOR_UNCONFIRMED;
         } else {
-            foreground = QColor(255, 255, 255);
+            foreground = COLOR_BLACK;
         }
         painter->setPen(foreground);
         QString amountText = BitcoinUnits::formatWithUnit(unit, amount, true, BitcoinUnits::separatorAlways);
@@ -87,7 +87,7 @@ public:
         }
         painter->drawText(amountRect, Qt::AlignRight | Qt::AlignVCenter, amountText);
 
-        painter->setPen(QColor(255, 255, 255));
+        painter->setPen(COLOR_BLACK);
         painter->drawText(amountRect, Qt::AlignLeft | Qt::AlignVCenter, GUIUtil::dateTimeStr(date));
 
         painter->restore();
@@ -129,22 +129,22 @@ OverviewPage::OverviewPage(QWidget* parent) : QWidget(parent),
 
     // init "out of sync" warning labels
     ui->labelWalletStatus->setText("(" + tr("out of sync") + ")");
-    ui->labelObfuscationSyncStatus->setHidden(true);
+    ui->labelObfuscationSyncStatus->setText("(" + tr("out of sync") + ")");
     ui->labelTransactionsStatus->setText("(" + tr("out of sync") + ")");
 
     if (fLiteMode) {
-        ui->frameObfuscation->setHidden(true);
+        ui->frameObfuscation->setVisible(false);
     } else {
         if (fMasterNode) {
-            ui->toggleObfuscation->setHidden(true);
-           /* ui->obfuscationAuto->setHidden(true);
-            ui->obfuscationReset->setHidden(true);*/
-            ui->frameObfuscation->setHidden(true);
+            ui->toggleObfuscation->setText("(" + tr("Disabled") + ")");
+            ui->obfuscationAuto->setText("(" + tr("Disabled") + ")");
+            ui->obfuscationReset->setText("(" + tr("Disabled") + ")");
+            ui->frameObfuscation->setEnabled(false);
         } else {
             if (!fEnableObfuscation) {
-                ui->toggleObfuscation->setHidden(true);
+                ui->toggleObfuscation->setText(tr("Start Obfuscation"));
             } else {
-                ui->toggleObfuscation->setHidden(true);
+                ui->toggleObfuscation->setText(tr("Stop Obfuscation"));
             }
             timer = new QTimer(this);
             connect(timer, SIGNAL(timeout()), this, SLOT(obfuScationStatus()));
@@ -182,7 +182,7 @@ void OverviewPage::setBalance(const CAmount& balance, const CAmount& unconfirmed
 	ui->labelBalance->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, balance - immatureBalance, false, BitcoinUnits::separatorAlways));
     ui->labelUnconfirmed->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, unconfirmedBalance, false, BitcoinUnits::separatorAlways));
     ui->labelImmature->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, immatureBalance, false, BitcoinUnits::separatorAlways));
-    ui->labelAnonymized->setHidden(true);
+    ui->labelAnonymized->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, anonymizedBalance, false, BitcoinUnits::separatorAlways));
     ui->labelTotal->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, balance + unconfirmedBalance, false, BitcoinUnits::separatorAlways));
 	
     ui->labelWatchAvailable->setText(BitcoinUnits::floorHtmlWithUnit(nDisplayUnit, watchOnlyBalance, false, BitcoinUnits::separatorAlways));
@@ -263,8 +263,8 @@ void OverviewPage::setWalletModel(WalletModel* model)
 
         connect(model->getOptionsModel(), SIGNAL(displayUnitChanged(int)), this, SLOT(updateDisplayUnit()));
 
-       /* connect(ui->obfuscationAuto, SIGNAL(clicked()), this, SLOT(obfuscationAuto()));
-        connect(ui->obfuscationReset, SIGNAL(clicked()), this, SLOT(obfuscationReset()));*/
+        connect(ui->obfuscationAuto, SIGNAL(clicked()), this, SLOT(obfuscationAuto()));
+        connect(ui->obfuscationReset, SIGNAL(clicked()), this, SLOT(obfuscationReset()));
         connect(ui->toggleObfuscation, SIGNAL(clicked()), this, SLOT(toggleObfuscation()));
         updateWatchOnlyLabels(model->haveWatchOnly());
         connect(model, SIGNAL(notifyWatchonlyChanged(bool)), this, SLOT(updateWatchOnlyLabels(bool)));
@@ -298,7 +298,7 @@ void OverviewPage::updateAlerts(const QString& warnings)
 void OverviewPage::showOutOfSyncWarning(bool fShow)
 {
     ui->labelWalletStatus->setVisible(fShow);
-    ui->labelObfuscationSyncStatus->setHidden(true);
+    ui->labelObfuscationSyncStatus->setVisible(fShow);
     ui->labelTransactionsStatus->setVisible(fShow);
 }
 
@@ -312,15 +312,15 @@ void OverviewPage::updateObfuscationProgress()
     QString strAnonymizeCARDbuyersAmount = BitcoinUnits::formatHtmlWithUnit(nDisplayUnit, nAnonymizeCARDbuyersAmount * COIN, false, BitcoinUnits::separatorAlways);
 
     if (currentBalance == 0) {
-        ui->obfuscationProgress->setHidden(true);
-        ui->obfuscationProgress->setHidden(true);
+        ui->obfuscationProgress->setValue(0);
+        ui->obfuscationProgress->setToolTip(tr("No inputs detected"));
 
         // when balance is zero just show info from settings
         strAnonymizeCARDbuyersAmount = strAnonymizeCARDbuyersAmount.remove(strAnonymizeCARDbuyersAmount.indexOf("."), BitcoinUnits::decimals(nDisplayUnit) + 1);
         strAmountAndRounds = strAnonymizeCARDbuyersAmount + " / " + tr("%n Rounds", "", nObfuscationRounds);
 
-        ui->labelAmountRounds->setHidden(true);
-        ui->labelAmountRounds->setHidden(true);
+        ui->labelAmountRounds->setToolTip(tr("No inputs detected"));
+        ui->labelAmountRounds->setText(strAmountAndRounds);
         return;
     }
 
@@ -364,7 +364,7 @@ void OverviewPage::updateObfuscationProgress()
                              QString(BitcoinUnits::factor(nDisplayUnit) == 1 ? "" : "~") + strMaxToAnonymize +
                              " / " + tr("%n Rounds", "", nObfuscationRounds) + "</span>";
     }
-    ui->labelAmountRounds->setHidden(true);
+    ui->labelAmountRounds->setText(strAmountAndRounds);
 
     // calculate parts of the progress, each of them shouldn't be higher than 1
     // progress of denominating
@@ -399,7 +399,7 @@ void OverviewPage::updateObfuscationProgress()
     float progress = denomPartCalc + anonNormPartCalc + anonFullPartCalc;
     if (progress >= 100) progress = 100;
 
-    ui->obfuscationProgress->setHidden(true);
+    ui->obfuscationProgress->setValue(progress);
 
     QString strToolPip = ("<b>" + tr("Overall progress") + ": %1%</b><br/>" +
                           tr("Denominated") + ": %2%<br/>" +
@@ -411,7 +411,7 @@ void OverviewPage::updateObfuscationProgress()
                              .arg(anonNormPart)
                              .arg(anonFullPart)
                              .arg(nAverageAnonymizedRounds);
-    ui->obfuscationProgress->setHidden(true);
+    ui->obfuscationProgress->setToolTip(strToolPip);
 }
 
 
@@ -430,9 +430,9 @@ void OverviewPage::obfuScationStatus()
             obfuScationPool.cachedNumBlocks = nBestHeight;
             updateObfuscationProgress();
 
-            ui->obfuscationEnabled->setHidden(true);
-            ui->obfuscationStatus->setHidden(true);
-            ui->toggleObfuscation->setHidden(true);
+            ui->obfuscationEnabled->setText(tr("Disabled"));
+            ui->obfuscationStatus->setText("");
+            ui->toggleObfuscation->setText(tr("Start Obfuscation"));
         }
 
         return;
@@ -444,7 +444,7 @@ void OverviewPage::obfuScationStatus()
         obfuScationPool.cachedNumBlocks = nBestHeight;
         updateObfuscationProgress();
 
-        ui->obfuscationEnabled->setHidden(true);
+        ui->obfuscationEnabled->setText(tr("Enabled"));
     }
 
     QString strStatus = QString(obfuScationPool.GetStatus().c_str());
@@ -454,36 +454,32 @@ void OverviewPage::obfuScationStatus()
     if (s != ui->obfuscationStatus->text())
         LogPrintf("Last Obfuscation message: %s\n", strStatus.toStdString());
 
-    ui->obfuscationStatus->setHidden(true);
+    ui->obfuscationStatus->setText(s);
 
     if (obfuScationPool.sessionDenom == 0) {
-        ui->labelSubmittedDenom->setHidden(true);
+        ui->labelSubmittedDenom->setText(tr("N/A"));
     } else {
         std::string out;
         obfuScationPool.GetDenominationsToString(obfuScationPool.sessionDenom, out);
         QString s2(out.c_str());
-        ui->labelSubmittedDenom->setHidden(true);
+        ui->labelSubmittedDenom->setText(s2);
     }
 }
 
-/*void OverviewPage::obfuscationAuto()
+void OverviewPage::obfuscationAuto()
 {
-	ui->obfuscationAuto->setHidden(true);
     obfuScationPool.DoAutomaticDenominating();
-	
 }
 
 void OverviewPage::obfuscationReset()
 {
-	ui->obfuscationReset->setHidden(true);
     obfuScationPool.Reset();
 
     QMessageBox::warning(this, tr("Obfuscation"),
         tr("Obfuscation was successfully reset."),
         QMessageBox::Ok, QMessageBox::Ok);
-		
 }
-*/
+
 void OverviewPage::toggleObfuscation()
 {
     QSettings settings;
@@ -525,10 +521,10 @@ void OverviewPage::toggleObfuscation()
     obfuScationPool.cachedNumBlocks = std::numeric_limits<int>::max();
 
     if (!fEnableObfuscation) {
-        ui->toggleObfuscation->setHidden(true);
+        ui->toggleObfuscation->setText(tr("Start Obfuscation"));
         obfuScationPool.UnlockCoins();
     } else {
-        ui->toggleObfuscation->setHidden(true);
+        ui->toggleObfuscation->setText(tr("Stop Obfuscation"));
 
         /* show obfuscation configuration if client has defaults set */
 

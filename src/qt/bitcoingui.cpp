@@ -90,7 +90,6 @@ BitcoinGUI::BitcoinGUI(const NetworkStyle* networkStyle, QWidget* parent) : QMai
                                                                             bip38ToolAction(0),
                                                                             aboutAction(0),
                                                                             receiveCoinsAction(0),
-																			infoAction(0),
                                                                             optionsAction(0),
                                                                             toggleHideAction(0),
                                                                             encryptWalletAction(0),
@@ -324,17 +323,6 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     historyAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_4));
 #endif
     tabGroup->addAction(historyAction);
-	
-	infoAction = new QAction(QIcon(":/icons/info"), tr("&Infos"), this);
-    infoAction->setStatusTip(tr("Info Actions for BCARD"));
-    infoAction->setToolTip(infoAction->statusTip());
-    infoAction->setCheckable(true);
-#ifdef Q_OS_MAC
-    infoAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_5));
-#else
-    infoAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
-#endif
-    tabGroup->addAction(infoAction);
 
 #ifdef ENABLE_WALLET
 
@@ -345,9 +333,9 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
         masternodeAction->setToolTip(masternodeAction->statusTip());
         masternodeAction->setCheckable(true);
 #ifdef Q_OS_MAC
-        masternodeAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_6));
+        masternodeAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_5));
 #else
-        masternodeAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_6));
+        masternodeAction->setShortcut(QKeySequence(Qt::ALT + Qt::Key_5));
 #endif
         tabGroup->addAction(masternodeAction);
         connect(masternodeAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
@@ -362,8 +350,6 @@ void BitcoinGUI::createActions(const NetworkStyle* networkStyle)
     connect(sendCoinsAction, SIGNAL(triggered()), this, SLOT(gotoSendCoinsPage()));
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(receiveCoinsAction, SIGNAL(triggered()), this, SLOT(gotoReceiveCoinsPage()));
-	connect(infoAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
-	connect(infoAction, SIGNAL(triggered()), this, SLOT(gotoInfoPage()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(showNormalIfMinimized()));
     connect(historyAction, SIGNAL(triggered()), this, SLOT(gotoHistoryPage()));
 #endif // ENABLE_WALLET
@@ -529,7 +515,6 @@ void BitcoinGUI::createToolBars()
         toolbar->addAction(sendCoinsAction);
         toolbar->addAction(receiveCoinsAction);
         toolbar->addAction(historyAction);
-		toolbar->addAction(infoAction);
         QSettings settings;
         if (settings.value("fShowMasternodesTab").toBool()) {
             toolbar->addAction(masternodeAction);
@@ -771,12 +756,6 @@ void BitcoinGUI::gotoSendCoinsPage(QString addr)
 {
     sendCoinsAction->setChecked(true);
     if (walletFrame) walletFrame->gotoSendCoinsPage(addr);
-}
-
-void BitcoinGUI::gotoInfoPage()
-{
-    infoAction->setChecked(false);
-    if (walletFrame) walletFrame->gotoInfoPage();
 }
 
 void BitcoinGUI::gotoSignMessageTab(QString addr)

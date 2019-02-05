@@ -52,6 +52,11 @@ class CValidationState;
 struct CBlockTemplate;
 struct CNodeStateStats;
 
+/** Default for -blockspamfilter, use header spam filter */
+ static const bool DEFAULT_BLOCK_SPAM_FILTER = true;
+ /** Default for -blockspamfiltermaxavg, maximum average size of an index occurrence in the block spam filter */
+ static const unsigned int DEFAULT_BLOCK_SPAM_FILTER_MAX_AVG = 10;
+
 inline int64_t GetMstrNodCollateral(int nHeight){
 
 
@@ -67,14 +72,11 @@ inline int64_t GetMstrNodCollateral(int nHeight){
     {
         return 15000;
     }
-    else if(nHeight >= 240000 && nHeight < 300000)
-    {
-        return 20000;
-    }
     else
     {
         return 20000;
     }
+
 
 }
 
